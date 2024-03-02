@@ -1,4 +1,5 @@
-﻿using CourseApi.Models;
+﻿using CourseApi.Filters;
+using CourseApi.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -8,6 +9,7 @@ namespace CourseApi.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
+    //[CustomAuthorizationFilter]
     public class StudentIActionController : ControllerBase
     {
         static List<Student> list = null;
@@ -46,7 +48,7 @@ namespace CourseApi.Controllers
                 return Ok(obj);
         }
         [HttpPost]
-       
+        [Authorize(Roles="Admin")]
         public IActionResult AddRecord(Student student)
         {
             list.Add(student);

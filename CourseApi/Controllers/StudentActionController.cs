@@ -1,5 +1,6 @@
 ﻿using CourseApi.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CourseApi.Controllers
@@ -9,7 +10,8 @@ namespace CourseApi.Controllers
     public class StudentActionController : ControllerBase
     {
         static List<Student> list = null;
-        public StudentActionController() {
+        public StudentActionController()
+        {
             if (list == null)
             {
                 list = new List<Student>()
@@ -35,11 +37,11 @@ namespace CourseApi.Controllers
 
         [HttpGet]
         [Route("{id}")]
-        public ActionResult<bool> GetById(int id)
+        public ActionResult<Student> GetById(int id)
         {
             var obj = list.FirstOrDefault(x => x.Id == id); ;
             if (obj == null)
-                return false;
+                return null;
             else
                 return Ok(obj);
         }
@@ -53,10 +55,55 @@ namespace CourseApi.Controllers
 
         [HttpPut]
         [Route("{id}")]
-        public void EditStudent(int id, Student student)
+        public IActionResult EditStudent(int id, Student student)
         {
+            var obj = GetById(id);
+            if (obj != null)
+            {
+                foreach (var temp in list)
+                {
+                    if (temp.Id == id)
+                    {
+                        temp.Name = student.Name;
+                        temp.Marks = student.Marks;
+                    }
+                }
+                return Ok();
+            }
+            else
+                return NotFound();
+                //list.Remove(obj);
+                
+            }
+
+        [HttpPatch]
+        [Route("{id}")]
+        public IActionResult Edit(int id, JsonPatchDocument<Student> patchDocument)
+        {
+            if (patchDocument == null || id < 1) return BadRequest();
+            Student obj1 = list.FirstOrDefault(x => x.Id == id);
+            if (obj1 == null) return NotFound();
+            var student = new Student
+            {
+                Id = obj1.Id,
+                Name = obj1.Name,
+                Marks = obj1.Marks
+
+            };
+            
+                patchDocument.ApplyTo(student, ModelState);
+                if (!ModelState.IsValid) return BadRequest();
+                else
+                {  obj1.Name = student.Name;
+                    obj1.Marks = student.Marks;
+                    return Ok();
+                }
+            
+             //list.Remove(obj);
 
         }
+
+
 
         [HttpDelete("{id}")]
 

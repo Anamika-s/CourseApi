@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using NLog;
 
 namespace CourseApi.Controllers
 {
@@ -7,7 +9,10 @@ namespace CourseApi.Controllers
     [ApiController]
     public class CourseController : ControllerBase
     {
-        ILogger<CourseController> _logger;
+        //private static Logger logger = LogManager.GetLogger("CourseController");
+
+        private ILogger<CourseController> _logger;
+        //ILogger<CourseController> _logger;
         public CourseController(ILogger<CourseController> logger)
         {
             _logger = logger;
@@ -21,12 +26,12 @@ namespace CourseApi.Controllers
             {
                 _logger.LogError("List is e,p;lty");
                 //list = new List<string>()
-  ;                return list;
+                ; return list;
             }
             else
             {
                 _logger.LogInformation("info");
-                //_logger.LogCritical("crtical");
+                _logger.LogCritical("crtical");
                 //_logger.LogError("ERror");
                 return new List<string>()
                 {
